@@ -1,34 +1,30 @@
 BUILD REQUIREMENTS
 ==================
 
-The UniMRCP project depends on a number of third party tools and libraries which must be installed first.
+In order to build the UniMRCP modules for Asterisk, both the UniMRCP and Asterisk projects must be
+installed first.
 
-All the required dependencies are available to download prepackaged for the UniMRCP use from the 
-following location:
+1. Asterisk
 
-	http://code.google.com/p/unimrcp/downloads/
+Asterisk is an open source communication platform which can be used as a PBX, an IVR, or a conference
+bridge.
 
-While there are a number of packages currently available, the recommended versions are:
+Project website:
+	http://www.asterisk.org
 
-	http://code.google.com/p/unimrcp/downloads/detail?name=unimrcp-deps-1.1.3.tar.gz  [Linux]
-	http://code.google.com/p/unimrcp/downloads/detail?name=unimrcp-deps-1.1.3.zip     [Win]
+Compatible versions:
+	Asterisk 1.4, 1.6, 1.8, 10, 11
 
-Alternatively, original versions of the libraries as well as patches on them can be downloaded
-separately from the following location:
+2. UniMRCP
 
-	http://www.unimrcp.org/dependencies/
+UniMRCP is an open source project compliant with the IETF RFC6787 (MRCPv2) and RFC4463 (MRCPv1)
+specifications.
 
-References:
+Project website:
+	http://www.unimrcp.org
 
-1. Apache Portable Runtime [>=1.2.x] (http://apr.apache.org/).
-In order to build any part of the UniMRCP project, the Apache Portable Runtime (APR) and 
-the APR Utility (APR-util) libraries are required. The libraries provide a consistent interface to
-underlying platform-specific implementations.
-
-2. Sofia-SIP [>=1.12.6] (http://sofia-sip.sourceforge.net/).
-Sofia-SIP is an open-source SIP User-Agent library, compliant with the IETF RFC3261 specification.
-The library is utilized for implementation of SIP signaling for MRCPv2. The SDP message parser is
-also used for both MRCPv2 (SIP/SDP) and MRCPv1 (RTSP/SDP).
+Compatible versions:
+	UniMRCP 1.0.0 and above
 
 
 GNU BUILD
@@ -42,122 +38,49 @@ Prerequisites:
 	gcc
 	pkg-config
 
-
 Procedure:
 
-If the UniMRCP source is checked out from the repository, the "bootstrap" script must be ran first
+If the source is checked out from the repository, the "bootstrap" script must be ran first
 in order to generate the "configure" script and other required files.
 
 	./bootstrap
 
-The usual "configure", "make", "make install" sequence of commands should follow in order to build 
-and install the project from source.
+The usual "configure", "make", "make install" sequence of commands should follow in order to build
+and install the modules from source.
 
 	./configure
 	make
 	make install
 
-As a result, the project will be installed in the directory "/usr/local/unimrcp" with the following
-layout:
+As a result, the modules res_speech_unimrcp.so and app_unimrcp.so will be installed in the modules
+directory of Asterisk such as /usr/lib/asterisk/modules by default. Similarly, the configuration
+files res-speech-unimrcp.conf and mrcp.conf will be placed in /etc/asterisk.
 
-	bin       binaries (unimrcpserver, unimrcpclient, ...)
-	conf      configuration files (unimrcpserver.xml, unimrcpclient.xml, ...)
-	data      data files
-	include   header files
-	lib       shared (convenience) libraries
-	log       log files
-	plugin    run-time loadable modules
+Configure options:
 
-There are a couple of options which can additionally be configured.
-In order to specify where to look for the APR and APR-util libraries, use the "--with-apr=" and 
-"--with-apr-util=" options respectively. For example:
+To explicitly specify where to look for Asterisk, use the option "--with-asterisk=". For example,
+if Asterisk is installed in /usr/local/asterisk-11, use:
 
-	./configure --with-apr=/usr/local/apr --with-apr-util=/usr/local/apr
+	./configure --with-asterisk=/usr/local/asterisk-11
 
-In order to specify where to look for the Sofia-SIP library, use the "--with-sofia-sip=" option.
-For example:
+To explicitly specify where the Asterisk configuration files are located, use the option
+"--with-asterisk-conf". For example:
 
-	./configure --with-sofia-sip=/usr/local/sofia-sip
+	./configure --with-asterisk-conf=/usr/local/asterisk/conf
 
-In order to generate executables and shared libraries for x86-64 architecture, use the "-m64" 
-option as follows:
+To explicitly specify the Asterisk version, use the option "--with-asterisk-version=". For example:
 
-	CFLAGS=-m64 CXXFLAGS=-m64 LDFLAGS=-m64 ./configure
+	./configure --with-asterisk-version=11.2.1
 
-In order to generate executables and shared libraries for i386 architecture, use the "-m32" option
-as follows:
+To explicitly specify where to look for UniMRCP, use the option "--with-unimrcp=". For example,
+if UniMRCP is installed in /usr/local/unimrcp-1.1, use:
 
-	CFLAGS=-m32 CXXFLAGS=-m32 LDFLAGS=-m32 ./configure
+	./configure --with-unimrcp=/usr/local/unimrcp-1.1
 
-In order to install the default configuration, use the following commands:
+To exclude the module res_speech_unimrcp.so from build, use:
 
-	cd conf
-	make def-conf
+	./configure --disable-res-speech-unimrcp
 
-In order to install the default data files, use the following commands:
+To exclude the module app_unimrcp.so from build, use:
 
-	cd data
-	make def-data
-
-In order to build a Doxygen generated documentation, use the following command:
-
-	make dox
-
-
-WINDOWS BUILD
-=============
-
-Prerequisites:
-
-	Microsoft Visual Studio 2005 or 2010.
-
-One-time pre-build setup: [optional]
-
-This step can be skipped if the dependencies are installed in their default locations. Otherwise,
-the paths in the corresponding property sheets must be modified accordingly. Below is the content
-of property sheets for Visual Studio 2005, which are located in the directory "build/vsprops".
-Similarly, property sheets for Visual Studio 2010 can be found in the directory "build/props".
-
-apr.vsprops
-	<UserMacro
-		Name="AprDir"
-		Value="$(SolutionDir)libs\apr"
-	/>
-	<UserMacro
-		Name="AprUtilDir"
-		Value="$(SolutionDir)libs\apr-util"
-	/>
-	
-sofiasip.vsprops
-	<UserMacro
-		Name="SofiaDir"
-		Value="$(SolutionDir)libs\sofia-sip"
-	/>
-
-Procedure:
-
-1. Open one of the available solution files:
-	* for Visual Studio 2005, use unimrcp.sln,
-	* for Visual Studio 2010, use unimrcp-2010.sln.
-2. Choose a platform (Build -> Configuration Manager):
-	* win32 
-	* x64.
-3. Choose a configuration (Build -> Configuration Manager):
-	* Debug
-	* Release.
-4. Build the solution (Build -> Build Solution).
-
-One-time output directory setup:
-
-Build the "prepare.vcproj" utility project by right clicking on the project icon from the Solution
-Explorer (tools->prepare) and selecting the Build command from the context menu. This routine will
-setup the output directory and copy all the required APR, APR-Util, and Sofia-SIP libraries as well 
-as the default configuration and data files. As a result, the output directory layout will look 
-like the following:
-
-	bin      binaries (unimrcpserver, unimrcpclient, ...) and all the required dlls
-	conf     configuration files (unimrcpserver.xml, unimrcpclient.xml, ...)
-	data     data files
-	lib      libraries
-	log      log files
-	plugin   run-time loadable modules
+	./configure --disable-app-unimrcp
