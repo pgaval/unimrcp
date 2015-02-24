@@ -1,8 +1,7 @@
 macrodir             = @ac_macro_dir@
 auxdir               = @ac_aux_dir@
 
-AUX_DIST             = $(auxdir)/compile \
-                       $(auxdir)/config.guess \
+AUX_DIST             = $(auxdir)/config.guess \
                        $(auxdir)/config.sub \
                        $(auxdir)/install-sh \
                        $(auxdir)/ltconfig \
@@ -23,14 +22,12 @@ MAINTAINERCLEANFILES = Makefile.in aclocal.m4 configure config.nice $(AUX_DIST) 
 
 ACLOCAL              = aclocal -I $(macrodir)
 
-SUBDIRS              = build conf data libs modules plugins platforms
-if TEST_SUITES
-SUBDIRS             += tests
+SUBDIRS              =
+
+if RES_SPEECH_UNIMRCP
+SUBDIRS              += res-speech-unimrcp
 endif
 
-dox:
-	doxygen $(top_srcdir)/docs/doxygen.conf
-
-install-data-local:
-	test -d $(DESTDIR)$(logdir) || $(mkinstalldirs) $(DESTDIR)$(logdir)
-	test -d $(DESTDIR)$(vardir) || $(mkinstalldirs) $(DESTDIR)$(vardir)
+if APP_UNIMRCP
+SUBDIRS              += app-unimrcp
+endif
